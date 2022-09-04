@@ -1,0 +1,29 @@
+[Unit]
+Description=Minecraft Server
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+ExecReload=/usr/bin/screen -S minecraft -X stuff "reload^M"
+
+ExecStart=/usr/bin/screen -DmS minecraft java -Xms2G -Xmx2G -jar server.jar --nogui
+
+ExecStop=/usr/bin/screen -S minecraft -X stuff "save-all^M"
+ExecStop=/bin/sleep 5
+ExecStop=/usr/bin/screen -S minecraft -X stuff "stop^M"
+ExecStop=/bin/sleep 5
+
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=full
+
+PrivateDevices=true
+PrivateUsers=true
+
+User=minecraft
+Group=minecraft
+
+WorkingDirectory=/home/minecraft

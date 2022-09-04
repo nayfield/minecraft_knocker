@@ -1,0 +1,14 @@
+[Unit]
+Description="minecraft http knocker"
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=rod
+Environment=HANDLER_ROUTE=secret_password_path
+Restart=on-failure
+Type=exec
+ExecStart=/home/myuser/mcknock
+
+[Install]
+WantedBy=multi-user.target

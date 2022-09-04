@@ -1,0 +1,104 @@
+---
+- name: packages for minecraft
+  become: yes
+  package:
+        name:
+            - firewalld
+            - openjdk-17-jre-headless
+            - screen
+            - tcpdump
+            - golang
+
+- name: minecraft user
+  become: yes
+  user:
+    name: minecraft
+    comment: minecraft
+    shell: /bin/bash
+
+- name: firewall open for knocker
+  become: yes
+  firewalld:
+    port: 25818/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: firewall zone for minecraft
+  become: yes
+  firewalld: port={{item}} permanent=true state=enabled immediate=yes zone=work
+  with_items:
+      - 25565/tcp
+      - 25818/tcp
+
+
+# todo get minecraft
+# https://piston-data.mojang.com/v1/objects/f69c284232d7c7580bd89a5a4931c3581eae1378/server.jar
+# also get rcon-cli https://github.com/itzg/rcon-cli
+
+- name: accept eula
+  become: yes
+  file:
+      path: /home/minecraft/eula.txt
+      content: 'eula=true'
+      owner: minecraft
+      group: minecraft
+      mode: 0644
+
+- name: port knock source
+  become: yes
+  copy:
+    src: files/mcknock.go
+    dest: ~myuser/mcknock.go
+    mode: 0644
+    owner: myuser
+    group: myuser
+
+- name: go get gorilla handlers
+  command: go get github.com/gorilla/handlers
+  args:
+      creates: ~/go/pkg/linux_amd64/github.com/gorilla/handlers.a
+
+- name: go build mcknock
+  command: go build mcknock.go
+  args:
+      creates: ~/mcknock
+
+- name: install mcknock unit
+  become: yes
+  copy: 
+      src: files/mcknock.service
+      dest: /etc/systemd/system
+      mode: 0644
+      owner: root
+      group: root
+
+- name: install minecraft unit
+  become: yes
+  copy: 
+      src: files/minecraft.service
+      dest: /etc/systemd/system
+      mode: 0644
+      owner: root
+      group: root
+
+- name: start and enable mcknock
+  become: yes
+  systemd:
+      name: mcknock.service
+      daemon_reload: yes
+      state: started
+      enabled: yes
+
+- name: start and enable minecraft
+  become: yes
+  systemd:
+      name: minecraft.service
+      daemon_reload: yes
+      state: started
+      enabled: yes
+
+
+
+
+
