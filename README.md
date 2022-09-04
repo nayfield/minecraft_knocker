@@ -16,7 +16,7 @@ You also need to punch holes for both minecraft and the knocker in your external
 
 ## How do your users use it
 
-- you give them a url of http://<my ip or hostname>:25818/secret_password
+- you give them a url of http://your ip or hostname:25818/secret_password
 - if somebody goes to that URL, it adds their IP to the 'work' zone, and they can connect to minecraft
 
 
