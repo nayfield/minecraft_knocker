@@ -46,13 +46,10 @@
       mode: 0644
 
 - name: port knock source
-  become: yes
   copy:
     src: files/mcknock.go
-    dest: ~myuser/mcknock.go
+    dest: ~/mcknock.go
     mode: 0644
-    owner: myuser
-    group: myuser
 
 - name: go get gorilla handlers
   command: go get github.com/gorilla/handlers
